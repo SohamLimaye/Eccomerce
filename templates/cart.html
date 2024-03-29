@@ -2,16 +2,71 @@
 <html>
 <head>
     <title>Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        p {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #666;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Cart</h1>
-    <ul>
-        {% for item in cart.items %}
-        <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.product.price }}</li>
-        {% endfor %}
-    </ul>
-    <p>Total Quantity: {{ cart.total_quantity }}</p>
-    <p>Total Bill: {{ cart.total_bill }}</p>
-    <a href="/products">Continue Shopping</a>
+    <div class="container">
+        <h1>Your Cart</h1>
+        <table>
+            <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+            {% for product_id, item in cart_data.products.items() %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.price }}</td>
+                <td>{{ item.quantity }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <p>Total Quantity: {{ cart_data.total_quantity }}</p>
+        <p>Total Bill: {{ cart_data.total_bill }}</p>
+        <a href="/display_products">Continue Shopping</a>
+        <a href="/">Back to Home</a>
+    </div>
 </body>
 </html>

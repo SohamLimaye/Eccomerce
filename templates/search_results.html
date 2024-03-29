@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+    <h1>Search Results for "{{ query }}"</h1>
+    <div class="products-container">
+        {% for product in search_results %}
+        <div class="product-card">
+            <img class="product-image" src="{{ url_for('static', filename='Images/' + product.name + '.jpeg') }}" alt="{{ product.name }}">
+            <div class="product-details">
+                <p class="product-name">{{ product.name }}</p>
+                <p class="product-price">Price: {{ product.price }}</p>
+                <p class="product-description">{{ product.description }}</p>
+                <form action="/add_to_cart/1/{{ product.id }}" method="POST">
+                    <input type="number" name="quantity" value="1" min="1">
+                    <button type="submit">Add to Cart</button>
+                </form>            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <a href="/display_products">Back to Products</a>
+</body>
+</html>

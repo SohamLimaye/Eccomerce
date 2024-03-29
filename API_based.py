@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 # Temporary product data
 products = [
@@ -8,25 +9,29 @@ products = [
         'id': 1,
         'name': 'MacBook Air',
         'price': 99900,
-        'description': 'Designed to be portable and powerful'
+        'description': 'Designed to be portable and powerful',
+        'image': 'Macbook Air.jpeg'
     },
     {
         'id': 2,
         'name': 'iPhone 15 Pro Titanium',
         'price': 134900,
-        'description': 'Cutting-edge features and premium build'
+        'description': 'Cutting-edge features and premium build',
+        'image': 'iPhone 15 Pro Titanium.jpeg'
     },
     {
         'id': 3,
         'name': 'Apple Watch Series 9',
         'price': 41900,
-        'description': 'Smarter, brighter, and mightier'
+        'description': 'Smarter, brighter, and mightier',
+        'image': 'Apple Watch Series 9.jpeg'
     },
     {
         'id': 4,
         'name': 'iPad',
         'price': 39900,
-        'description': 'Loveable, drawable, and magical'
+        'description': 'Loveable, drawable, and magical',
+        'image': 'iPad.jpeg'
     }
 ]
 
@@ -40,8 +45,18 @@ def home():
 # Routes for handling different API endpoints
 @app.route('/display_products', methods=['GET'])
 def get_products():
-    #return jsonify(products)
-    return render_template('products.html', products=products)
+    sort_by = request.args.get('sort_by')
+    if sort_by == 'price_asc':
+        sorted_products = sorted(products, key=lambda x: x['price'])
+    elif sort_by == 'price_desc':
+        sorted_products = sorted(products, key=lambda x: x['price'], reverse=True)
+    elif sort_by == 'popularity':
+        # Implement popularity-based sorting logic here
+        sorted_products = sorted(products, key=lambda x: x['popularity'], reverse=True)
+    else:
+        sorted_products = products  # Default sorting by product ID
+
+    return render_template('products.html', products=sorted_products)
 
 
 @app.route('/display_product/<int:product_id>', methods=['GET'])
@@ -80,10 +95,8 @@ def view_cart(user_id):
         'total_quantity': total_quantity,
         'total_bill': total_bill
     }
+    return render_template('cart.html', cart_data=cart_data)
 
-    return jsonify(cart_data)
-
-# Route for adding a product to the cart with a specified quantity
 @app.route('/add_to_cart/<user_id>/<int:product_id>', methods=['POST'])
 def add_to_cart(user_id, product_id):
     if user_id not in carts:
@@ -93,11 +106,10 @@ def add_to_cart(user_id, product_id):
     if not product:
         return jsonify({'message': 'Product not found'}), 404
 
-    data = request.get_json()
-    if not data or 'quantity' not in data or not isinstance(data['quantity'], int) or data['quantity'] <= 0:
-        return jsonify({'error': 'Invalid quantity specified'}), 400
+    quantity = int(request.form.get('quantity', 0))  # Get quantity from form data
 
-    quantity = data['quantity']
+    if quantity <= 0:
+        return jsonify({'error': 'Invalid quantity specified'}), 400
 
     if product_id in carts[user_id]:
         carts[user_id][product_id]['quantity'] += quantity
@@ -106,8 +118,7 @@ def add_to_cart(user_id, product_id):
             'product': product,
             'quantity': quantity
         }
-
-    return jsonify({'message': 'Product added to cart'}), 200
+    return render_template('product_added.html', product_name=product['name'])
 
 # Route for removing a specific quantity of a product from the cart
 @app.route('/remove_from_cart/<user_id>/<int:product_id>', methods=['PUT'])
@@ -134,11 +145,11 @@ def search_product():
     # Get the search query from the query parameter
     query = request.args.get('query')
     if not query:
-        return jsonify({'error': 'Search query parameter is missing'}), 400
+        return render_template('products.html', products=products)
 
     # Search for products containing the query string in their name
     search_results = [p for p in products if query.lower() in p['name'].lower()]
-    return jsonify(search_results)
+    return render_template('search_results.html', query=query, search_results=search_results)
 
 
 if __name__ == '__main__':

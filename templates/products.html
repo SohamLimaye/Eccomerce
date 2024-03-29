@@ -2,14 +2,119 @@
 <html>
 <head>
     <title>Products</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .products-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .product-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            width: 250px;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+        .product-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .product-image {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+        }
+        .product-details {
+            margin-top: auto;
+        }
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .product-price {
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        .product-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .add-to-cart {
+            color: #28a745;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .add-to-cart:hover {
+            color: #218838;
+        }
+        .search-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        /* New styles for the sorting dropdown */
+        .sort-dropdown {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        /* Styling for the dropdown */
+        .sort-dropdown select {
+            padding: 5px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Products</h1>
-    <ul>
+    <h1 style="text-align: center; margin-top: 20px;">Products</h1>
+    <!-- Search form -->
+    <form class="search-form" action="/search_product" method="GET">
+        <label for="query">Search:</label>
+        <input type="text" id="query" name="query" placeholder="Search for products...">
+        <button type="submit">Search</button>
+    </form>
+    <!-- Sorting dropdown -->
+    <div class="sort-dropdown">
+        <label for="sort">Sort by:</label>
+        <select id="sort" name="sort">
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="popularity">Popularity</option>
+            <!-- Add more options for different sorting criteria -->
+        </select>
+    </div>
+    <div class="products-container">
         {% for product in products %}
-        <li>{{ product.name }} - Price: {{ product.price }}</li>
+        <div class="product-card">
+            <img class="product-image" src="{{ url_for('static', filename='Images/' + product.name + '.jpeg') }}" alt="{{ product.name }}">
+            <div class="product-details">
+                <p class="product-name">{{ product.name }}</p>
+                <p class="product-price">Price: {{ product.price }}</p>
+                <p class="product-description">{{ product.description }}</p>
+                <form action="/add_to_cart/1/{{ product.id }}" method="POST">
+                    <input type="number" name="quantity" value="1" min="1">
+                    <button type="submit">Add to Cart</button>
+                </form>            </div>
+        </div>
         {% endfor %}
-    </ul>
-    <a href="/">Back to Home</a>
+    </div>
+    <a href="/view_cart/1" style="display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #007bff; font-weight: bold;">View Cart</a>
+    <a href="/" style="display: block; text-align: center; margin-top: 10px; text-decoration: none; color: #007bff; font-weight: bold;">Back to Home</a>
 </body>
 </html>
