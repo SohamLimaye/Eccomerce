@@ -61,85 +61,68 @@ def add_product():
     products.append(new_product)
     return jsonify(new_product), 201
 
-from flask import request, jsonify
-
-@app.route('/cart/view', methods=['GET'])
-def view_cart():
-    # Get the user_id from the query parameter
-    user_id = request.args.get('user_id')
-    print(user_id)
-    
-    # Check if user_id is provided
-    if user_id is None:
-        return jsonify({'error': 'user_id parameter is missing'}), 400
-
-    # Get the user's cart from the carts dictionary
+# Route for viewing the cart with total item quantity and total bill
+@app.route('/view_cart/<user_id>', methods=['GET'])
+def view_cart(user_id):
     cart = carts.get(user_id, {})
-    print(cart)
-
-    # Create a list to store cart items with additional details
-    cart_items = []
-    total_amount = 0
-
-    # Iterate through the cart items
-    for product_id, quantity in cart.items():
-        # Try to find the product by its id in the products list
-        product = next((p for p in products if p['id'] == product_id), None)
-        if product:
-            item_total = product['price'] * quantity
-            total_amount += item_total
-            cart_items.append({
-                'product_id': product_id,
-                'name': product['name'],
-                'price': product['price'],
-                'quantity': quantity,
-                'item_total': item_total
-            })
     
-    print(cart_items)
-    
-    # Prepare the response
-    response_data = {
-        'cart_items': cart_items,
-        'total_amount': total_amount
+    total_quantity = sum(item['quantity'] for item in cart.values())
+    total_bill = sum(item['product']['price'] * item['quantity'] for item in cart.values())
+
+    cart_data = {
+        'products': cart,
+        'total_quantity': total_quantity,
+        'total_bill': total_bill
     }
 
-    # Return the response as JSON
-    return jsonify(response_data)
+    return jsonify(cart_data)
 
-@app.route('/cart/add', methods=['POST'])
-def add_to_cart():
-    data = request.get_json()
-    user_id = data.get('user_id')
-    product_id = data.get('product_id')
-    quantity = data.get('quantity', 1)
+# Route for adding a product to the cart with a specified quantity
+@app.route('/add_to_cart/<user_id>/<int:product_id>', methods=['POST'])
+def add_to_cart(user_id, product_id):
+    if user_id not in carts:
+        carts[user_id] = {}
 
     product = next((p for p in products if p['id'] == product_id), None)
     if not product:
-        return jsonify({'error': 'Product not found'}), 404
+        return jsonify({'message': 'Product not found'}), 404
 
-    # Add the product to the user's cart or update the quantity if it's already in the cart
-    cart = carts.get(user_id, {})
-    cart[product_id] = cart.get(product_id, 0) + quantity
-    carts[user_id] = cart
-    print(cart)
-    print(carts)
-
-    return jsonify(cart)
-
-@app.route('/cart/delete', methods=['POST'])
-def delete_from_cart():
     data = request.get_json()
-    user_id = data.get('user_id')
-    product_id = data.get('product_id')
+    if not data or 'quantity' not in data or not isinstance(data['quantity'], int) or data['quantity'] <= 0:
+        return jsonify({'error': 'Invalid quantity specified'}), 400
 
-    cart = carts.get(user_id, {})
-    if product_id in cart:
-        del cart[product_id]
-        carts[user_id] = cart
-        return jsonify({'message': 'Product removed from cart successfully'}), 200
+    quantity = data['quantity']
+
+    if product_id in carts[user_id]:
+        carts[user_id][product_id]['quantity'] += quantity
     else:
-        return jsonify({'error': 'Product not found in the cart'}), 404
+        carts[user_id][product_id] = {
+            'product': product,
+            'quantity': quantity
+        }
+
+    return jsonify({'message': 'Product added to cart'}), 200
+
+# Route for removing a product from the cart
+@app.route('/remove_from_cart/<user_id>/<int:product_id>', methods=['DELETE'])
+def remove_from_cart(user_id, product_id):
+    if user_id not in carts or product_id not in carts[user_id]:
+        return jsonify({'message': 'Product not found in the cart'}), 404
+
+    del carts[user_id][product_id]
+
+    return jsonify({'message': 'Product removed from cart'}), 200
+
+@app.route('/search_product', methods=['GET'])
+def search_product():
+    # Get the search query from the query parameter
+    query = request.args.get('query')
+    if not query:
+        return jsonify({'error': 'Search query parameter is missing'}), 400
+
+    # Search for products containing the query string in their name
+    search_results = [p for p in products if query.lower() in p['name'].lower()]
+    return jsonify(search_results)
 
 print(carts)
 if __name__ == '__main__':
