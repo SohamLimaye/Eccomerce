@@ -33,10 +33,16 @@ products = [
 # Temporary cart data stored in a Python dictionary for each user
 carts = {}
 
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 # Routes for handling different API endpoints
 @app.route('/display_products', methods=['GET'])
 def get_products():
-    return jsonify(products)
+    #return jsonify(products)
+    return render_template('products.html', products=products)
+
 
 @app.route('/display_product/<int:product_id>', methods=['GET'])
 def get_product(product_id):
@@ -134,7 +140,7 @@ def search_product():
     search_results = [p for p in products if query.lower() in p['name'].lower()]
     return jsonify(search_results)
 
-print(carts)
+
 if __name__ == '__main__':
     app.run(debug=True)
 
