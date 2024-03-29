@@ -103,15 +103,25 @@ def add_to_cart(user_id, product_id):
 
     return jsonify({'message': 'Product added to cart'}), 200
 
-# Route for removing a product from the cart
-@app.route('/remove_from_cart/<user_id>/<int:product_id>', methods=['DELETE'])
+# Route for removing a specific quantity of a product from the cart
+@app.route('/remove_from_cart/<user_id>/<int:product_id>', methods=['PUT'])
 def remove_from_cart(user_id, product_id):
     if user_id not in carts or product_id not in carts[user_id]:
         return jsonify({'message': 'Product not found in the cart'}), 404
 
-    del carts[user_id][product_id]
+    data = request.get_json()
+    if not data or 'quantity' not in data or not isinstance(data['quantity'], int) or data['quantity'] <= 0:
+        return jsonify({'error': 'Invalid quantity specified'}), 400
 
-    return jsonify({'message': 'Product removed from cart'}), 200
+    quantity_to_remove = data['quantity']
+    current_quantity = carts[user_id][product_id]['quantity']
+
+    if quantity_to_remove >= current_quantity:
+        del carts[user_id][product_id]
+    else:
+        carts[user_id][product_id]['quantity'] -= quantity_to_remove
+
+    return jsonify({'message': 'Quantity removed from cart'}), 200
 
 @app.route('/search_product', methods=['GET'])
 def search_product():
