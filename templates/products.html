@@ -91,16 +91,17 @@
     </form>
     <!-- Sorting dropdown -->
     <div class="sort-dropdown">
-        <label for="sort">Sort by:</label>
-        <select id="sort" name="sort">
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="popularity">Popularity</option>
-            <!-- Add more options for different sorting criteria -->
-        </select>
+        <form action="/display_products" method="GET">
+            <label for="sort_by">Sort by:</label>
+            <select id="sort_by" name="sort_by">
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+            </select>
+            <button type="submit">Sort</button>
+        </form>
     </div>
     <div class="products-container">
-        {% for product in products %}
+        {% for product in sorted_products %}
         <div class="product-card">
             <img class="product-image" src="{{ url_for('static', filename='Images/' + product.name + '.jpeg') }}" alt="{{ product.name }}">
             <div class="product-details">

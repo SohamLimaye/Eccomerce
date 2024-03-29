@@ -50,13 +50,10 @@ def get_products():
         sorted_products = sorted(products, key=lambda x: x['price'])
     elif sort_by == 'price_desc':
         sorted_products = sorted(products, key=lambda x: x['price'], reverse=True)
-    elif sort_by == 'popularity':
-        # Implement popularity-based sorting logic here
-        sorted_products = sorted(products, key=lambda x: x['popularity'], reverse=True)
     else:
         sorted_products = products  # Default sorting by product ID
 
-    return render_template('products.html', products=sorted_products)
+    return render_template('products.html', sorted_products=sorted_products)
 
 
 @app.route('/display_product/<int:product_id>', methods=['GET'])
