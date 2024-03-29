@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .product-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .product-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .product-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .product-price {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .product-description {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .add-to-cart {
+            color: #28a745;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .add-to-cart:hover {
+            color: #218838;
+        }
+        .specifications {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
+        .specifications h2 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .specifications ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .specifications ul li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="product-container">
+        <h1 class="product-name">{{ product.name }}</h1>
+        <img class="product-image" src="{{ url_for('static', filename='Images/' + product.image) }}" alt="{{ product.name }}">
+        <p class="product-price">Price: {{ product.price }}</p>
+        <p class="product-description">{{ product.description }}</p>
+        <!-- Specifications section -->
+        <div class="specifications">
+            <h2>Specifications</h2>
+            <ul>
+                {% for key, value in product.specifications.items() %}
+                <li><strong>{{ key }}:</strong> {{ value }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <form action="/add_to_cart/1/{{ product.id }}" method="POST">
+            <input type="number" name="quantity" value="1" min="1">
+            <button type="submit" class="add-to-cart">Add to Cart</button>
+        </form>
+    </div>
+    <a href="/view_cart/1" style="display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #007bff; font-weight: bold;">View Cart</a>
+    <a href="/display_products">Continue Shopping</a>
+
+</body>
+</html>
