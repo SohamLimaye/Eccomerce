@@ -1,44 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 0 20px;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        p {
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            color: #666;
-        }
-        a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-        a:hover {
-            color: #0056b3;
-        }
-    </style>
+    <title>E-commerce App</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to the Store</h1>
-        <p>Explore our products and find what you need.</p>
-        <a href="/display_products">View Products</a>
-    </div>
+    <h1>Welcome to the E-commerce App</h1>
+    <h2>Products:</h2>
+    <ul>
+        {% for product in products %}
+        <li>{{ product.name }} - {{ product.price }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Add Product:</h2>
+    <form method="post" action="/add_product">
+        <label for="name">Product Name:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="price">Price:</label><br>
+        <input type="number" id="price" name="price"><br>
+        <button type="submit">Add Product</button>
+    </form>
+    <h2>Your Cart:</h2>
+    <ul>
+        {% for item in cart.products %}
+        <li>{{ item.product.name }} - Quantity: {{ item.quantity }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
