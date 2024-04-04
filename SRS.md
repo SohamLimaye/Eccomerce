@@ -58,5 +58,10 @@
    
 # Questions
 - How to Estimate Cost for project?
-- 
+    - Build vs Buy dilemma
+
+### Cost estimation-
+    - convert efforts into $ per hour estimate
+    - may need re-architecture
+    - assume cost of efforts to be $8/hr 
 
