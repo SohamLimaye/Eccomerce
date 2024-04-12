@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEasy</title>
+    <!-- Include Firebase JavaScript SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js"></script>
+    <!-- Initialize Firebase -->
+    <script>
+    var firebaseConfig = {
+        // Your Firebase configuration
+    };
+    firebase.initializeApp(firebaseConfig);
+    </script>
+</head>
+<body>
+    <h1>Welcome to the ShopEasy</h1>
+    <h3>1 stop place for for all the stuff that you need!</h3>
+    <p>Click <a href="{{ url_for('display_products') }}">here</a> to view our products.</p>
+</body>
+</html>

@@ -103,7 +103,7 @@
     <div class="products-container">
         {% for product in sorted_products %}
         <div class="product-card">
-            <a href="{{ url_for('display_product', product_id=product.id) }}">
+            <a href="{{ url_for('display_products', product_id=product.id) }}">
                 <img class="product-image" src="{{ url_for('static', filename='Images/' + product.image) }}" alt="{{ product.name }}">
                 <div class="product-details">
                     <p class="product-name">{{ product.name }}</p>
@@ -118,7 +118,7 @@
         </div>        
         {% endfor %}
     </div>
-    <a href="/view_cart/1" style="display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #007bff; font-weight: bold;">View Cart</a>
+    <a href="/cart/view" style="display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #007bff; font-weight: bold;">View Cart</a>
     <a href="/" style="display: block; text-align: center; margin-top: 10px; text-decoration: none; color: #007bff; font-weight: bold;">Back to Home</a>
 </body>
 </html>
