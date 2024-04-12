@@ -1,19 +1,31 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
-
+import os
 app = Flask(__name__)
 
-client = MongoClient("mongodb+srv://soham22111058:oIIxco77OOlQvjkm@cluster1.d2wqoyr.mongodb.net/") 
+client = MongoClient(os.getenv("MONGODB_URI"))
 
 db = client["e-commerce"]  # Replace with your MongoDB database name
 products_collection = db["products"]
 carts_collection = db["carts"]
 
+@app.route('/', methods=['GET'])
+def landing_page():
+    return render_template('landing_page.html')
+
 # Function to display all products from the MongoDB database
 @app.route('/display_products', methods=['GET'])
 def display_products():
     products = list(products_collection.find({}, {"_id": 0}))
-    return jsonify({'products': products})
+    sort_by = request.args.get('sort_by')
+    if sort_by == 'price_asc':
+        sorted_products = sorted(products, key=lambda x: x['price'])
+    elif sort_by == 'price_desc':
+        sorted_products = sorted(products, key=lambda x: x['price'], reverse=True)
+    else:
+        sorted_products = products  # Default sorting by product ID
+
+    return render_template('products.html', sorted_products=sorted_products)
 
 @app.route('/add_product', methods=['POST'])
 def add_product():
